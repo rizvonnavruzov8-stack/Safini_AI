@@ -44,5 +44,8 @@ Children earn Time Coins by completing productive tasks (Duolingo, daily steps, 
 - **Phase 2 (Sync)**: Firebase integration for multi-device family synchronization.
 - **Phase 3 (Enforcement)**: Device-level screen-time API integration for automated enforcement.
 
+## 📄 Documentation
+This project is the technical implementation of the **Safini AI Pivot Product Requirements Document**. It translates the vision of an earned-time rewards system into a functional Flutter mobile prototype.
+
 ---
-*Created for the Safini AI Pivot MVP by Ilkhom Sidikov.*
+*MVP Implementation based on departmental requirements.*
