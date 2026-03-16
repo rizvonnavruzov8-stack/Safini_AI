@@ -1,17 +1,48 @@
-# safini_ai
+# Safini AI - Earned Screen Time Platform 🚀
 
-A new Flutter project.
+Safini AI is a dual-mode parental control and habit-building application built with Flutter. It helps families replace screen-time conflict with a balanced "earned-time" system powered by **Time Coins**.
 
-## Getting Started
+## 🌟 Core Concept
+Children earn Time Coins by completing productive tasks (Duolingo, daily steps, logic puzzles, homework) and spend them to unlock entertainment minutes in controlled apps like YouTube, Roblox, and Minecraft.
 
-This project is a starting point for a Flutter application.
+## 🛠️ Tech Stack
+- **Framework**: Flutter (Cross-platform iOS/Android)
+- **State Management**: Riverpod (Reactive and scalable)
+- **Database**: Hive (High-performance, offline-first local persistence)
+- **Design**: Modern, premium UI using the Outfit typography and FontAwesome.
 
-A few resources to get you started if this is your first Flutter project:
+## 📱 Features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+### Kids Mode
+- **Mission Feed**: List of tasks categorized by Language, Brain, Movement, and more.
+- **Reward Shop**: Secure session unlocking using earned Time Coins.
+- **AI Friend**: Initial integration of a child-facing AI assistant for encouragement.
+- **Streaks & Progress**: Gamified progression system to drive long-term habit formation.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Parent Mode
+- **Task Creator**: Form to set custom or template-based goals.
+- **Approval Queue**: Streamlined verification flow for child-submitted "proof".
+- **Insight Dashboard**: Monitor coin earnings and app-time consumption.
+
+## 🚀 Getting Started
+
+1. **Install Dependencies**:
+   ```bash
+   flutter pub get
+   ```
+2. **Generate Models**:
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+3. **Run the App**:
+   ```bash
+   flutter run
+   ```
+
+## 📅 Roadmap
+- **Phase 1 (MVP)**: Core earned-time loop with local persistence (Completed).
+- **Phase 2 (Sync)**: Firebase integration for multi-device family synchronization.
+- **Phase 3 (Enforcement)**: Device-level screen-time API integration for automated enforcement.
+
+---
+*Created for the Safini AI Pivot MVP by Ilkhom Sidikov.*
