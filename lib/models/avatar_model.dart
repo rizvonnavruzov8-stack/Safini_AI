@@ -3,7 +3,18 @@ import 'package:hive/hive.dart';
 part 'avatar_model.g.dart';
 
 @HiveType(typeId: 5)
-enum AvatarCategory { outfit, face, hair, back, effects }
+enum AvatarCategory {
+  @HiveField(0)
+  outfit,
+  @HiveField(1)
+  face,
+  @HiveField(2)
+  hair,
+  @HiveField(3)
+  back,
+  @HiveField(4)
+  effects
+}
 
 @HiveType(typeId: 6)
 class AvatarItem extends HiveObject {

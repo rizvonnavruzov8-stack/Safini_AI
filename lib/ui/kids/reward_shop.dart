@@ -10,105 +10,149 @@ class RewardShop extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(coinBalanceProvider);
+    final rewards = ref.watch(rewardListProvider);
     final theme = Theme.of(context);
 
-    // Mock rewards for MVP
-    final rewards = [
-      {'id': 'r1', 'title': 'Roblox Access', 'cost': 50, 'time': 30, 'icon': FontAwesomeIcons.gamepad, 'color': Colors.red},
-      {'id': 'r2', 'title': 'YouTube Time', 'cost': 30, 'time': 15, 'icon': FontAwesomeIcons.youtube, 'color': Colors.redAccent},
-      {'id': 'r3', 'title': 'Minecraft Session', 'cost': 100, 'time': 60, 'icon': FontAwesomeIcons.cubes, 'color': Colors.green},
-    ];
-
     return Scaffold(
+      backgroundColor: AppTheme.bgLight,
       appBar: AppBar(
-        title: const Text('Reward Shop'),
+        title: const Text('Reward Store'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: Text(
-                '🪙 $balance',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-          ),
+          _buildCoinBadge(balance),
         ],
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(20),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 20,
-          crossAxisSpacing: 20,
-          childAspectRatio: 0.8,
-        ),
-        itemCount: rewards.length,
-        itemBuilder: (context, index) {
-          final reward = rewards[index];
-          final canAfford = balance >= (reward['cost'] as int);
+      body: rewards.isEmpty
+          ? const Center(child: Text('No rewards available. Ask your parent to add some!'))
+          : GridView.builder(
+              padding: const EdgeInsets.all(20),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 20,
+                crossAxisSpacing: 20,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: rewards.length,
+              itemBuilder: (context, index) {
+                final reward = rewards[index];
+                final canAfford = balance >= reward.cost;
+                return _buildRewardCard(context, ref, reward, canAfford);
+              },
+            ),
+    );
+  }
 
-          return _buildRewardCard(context, ref, reward, canAfford);
-        },
+  Widget _buildCoinBadge(int balance) {
+    return Container(
+      margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.monetization_on, color: AppTheme.accentGold, size: 18),
+          const SizedBox(width: 4),
+          Text(
+            '$balance',
+            style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildRewardCard(BuildContext context, WidgetRef ref, Map<String, dynamic> reward, bool canAfford) {
+  Widget _buildRewardCard(BuildContext context, WidgetRef ref, Reward reward, bool canAfford) {
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(reward['icon'] as IconData, color: reward['color'] as Color, size: 40),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _getRewardColor(reward.title).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(_getRewardIcon(reward.title), color: _getRewardColor(reward.title), size: 30),
+          ),
           const SizedBox(height: 12),
           Text(
-            reward['title'] as String,
+            reward.title,
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           Text(
-            '${reward['time']} Minutes',
-            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            reward.description,
+            style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
           ),
-          const SizedBox(height: 16),
+          const Spacer(),
           ElevatedButton(
             onPressed: canAfford ? () => _confirmPurchase(context, ref, reward) : null,
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              minimumSize: const Size(0, 36),
-              backgroundColor: canAfford ? const Color(0xFFFFD700) : Colors.grey[300],
-              foregroundColor: canAfford ? Colors.black : Colors.grey[600],
+              minimumSize: const Size(double.infinity, 40),
+              backgroundColor: canAfford ? AppTheme.primaryColor : Colors.grey[200],
+              foregroundColor: canAfford ? Colors.white : Colors.grey[500],
+              elevation: canAfford ? 4 : 0,
             ),
-            child: Text('${reward['cost']} Coins'),
+            child: Text('${reward.cost} Coins'),
           ),
         ],
       ),
     );
   }
 
-  void _confirmPurchase(BuildContext context, WidgetRef ref, Map<String, dynamic> reward) {
+  IconData _getRewardIcon(String title) {
+    final t = title.toLowerCase();
+    if (t.contains('youtube')) return FontAwesomeIcons.youtube;
+    if (t.contains('roblox')) return FontAwesomeIcons.gamepad;
+    if (t.contains('minecraft')) return FontAwesomeIcons.cubes;
+    if (t.contains('stars')) return FontAwesomeIcons.star;
+    return Icons.apps;
+  }
+
+  Color _getRewardColor(String title) {
+    final t = title.toLowerCase();
+    if (t.contains('youtube')) return Colors.red;
+    if (t.contains('roblox')) return Colors.blue;
+    if (t.contains('minecraft')) return Colors.green;
+    return AppTheme.primaryColor;
+  }
+
+  void _confirmPurchase(BuildContext context, WidgetRef ref, Reward reward) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Ready to play?'),
-        content: Text('This will unlock ${reward['time']} minutes of ${reward['title']}. Ready?'),
+      builder: (c) => AlertDialog(
+        title: const Text('Ready to unlock?'),
+        content: Text('This will redeem ${reward.cost} Time Coins for ${reward.title}. Enjoy your time!'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Not yet')),
+          TextButton(onPressed: () => Navigator.pop(c), child: const Text('Not yet')),
           ElevatedButton(
             onPressed: () {
               ref.read(coinBalanceProvider.notifier).addTransaction(Transaction(
                 id: DateTime.now().toIso8601String(),
-                amount: reward['cost'] as int,
+                amount: reward.cost,
                 type: TransactionType.spend,
                 date: DateTime.now(),
-                description: 'Unlocked ${reward['title']}',
+                description: 'Unlocked ${reward.title}',
               ));
-              Navigator.pop(context);
-              _showSuccessOverlay(context, reward['title'] as String);
+              Navigator.pop(c);
+              _showSuccessOverlay(context, reward.title);
             },
             child: const Text('Unlock!'),
           ),

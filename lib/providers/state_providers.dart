@@ -86,3 +86,42 @@ final progressToNextLevelProvider = Provider<double>((ref) {
   final xp = ref.watch(xpProvider);
   return (xp % 100) / 100.0; 
 });
+
+final avatarListProvider = StateNotifierProvider<AvatarListNotifier, List<AvatarItem>>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return AvatarListNotifier(storage);
+});
+
+class AvatarListNotifier extends StateNotifier<List<AvatarItem>> {
+  final StorageService _storage;
+  AvatarListNotifier(this._storage) : super([]) {
+    _loadAvatars();
+  }
+
+  void _loadAvatars() {
+    state = _storage.getAvatarBox().values.toList();
+  }
+
+  Future<void> purchaseItem(String id, int cost) async {
+    final item = state.firstWhere((i) => i.id == id);
+    item.isOwned = true;
+    await item.save();
+    _loadAvatars();
+  }
+}
+
+final rewardListProvider = StateNotifierProvider<RewardListNotifier, List<Reward>>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return RewardListNotifier(storage);
+});
+
+class RewardListNotifier extends StateNotifier<List<Reward>> {
+  final StorageService _storage;
+  RewardListNotifier(this._storage) : super([]) {
+    _loadRewards();
+  }
+
+  void _loadRewards() {
+    state = _storage.getRewardBox().values.toList();
+  }
+}

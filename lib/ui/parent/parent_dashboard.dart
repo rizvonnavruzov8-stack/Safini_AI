@@ -19,15 +19,10 @@ class ParentDashboard extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
-        title: const Text('Safinio Parent', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: AppTheme.primaryColor),
-            onPressed: () {},
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
+          onPressed: () => ref.read(appModeProvider.notifier).state = AppMode.kids,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(

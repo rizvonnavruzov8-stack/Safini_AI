@@ -77,72 +77,70 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildHero(BuildContext context, int balance, int level) {
+  Widget _buildHero(BuildContext context, int balance) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 30),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.white, AppTheme.bgLight.withOpacity(0.5)],
-        ),
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
       ),
       child: Column(
         children: [
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                width: 140,
-                height: 140,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppTheme.primaryColor, width: 4),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withOpacity(0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    )
-                  ],
-                  image: const DecorationImage(
-                    image: NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuDgTVTT1D5mv1d0zmlTH5zrv7sxPwJ1a1X3LGg0LzL1JFsHZeM8H9l3rMvNATxKc2sFGgun-91ATsAsz92f9NTHvA_fSwzoPcfmN-c3cKr_ntREkP3obrfdXeMOGkSOP6ajM1DTLhbkDZKayDhC5WMRbT7cSr6WbNOIzBULZdIpfcB4vlq-lDaEv5rZrkIY_uhEhNxxATWBlBdMDJrfdvBff6htbndO8FcapEoTwWFTftDeqSAZz2mtOTBQ1LEQ5n6pD-0jJbeL42sh"),
-                    fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const AvatarCustomizer())),
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppTheme.primaryColor, width: 4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      )
+                    ],
+                    image: const DecorationImage(
+                      image: NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuDgTVTT1D5mv1d0zmlTH5zrv7sxPwJ1a1X3LGg0LzL1JFsHZeM8H9l3rMvNATxKc2sFGgun-91ATsAsz92f9NTHvA_fSwzoPcfmN-c3cKr_ntREkP3obrfdXeMOGkSOP6ajM1DTLhbkDZKayDhC5WMRbT7cSr6WbNOIzBULZdIpfcB4vlq-lDaEv5rZrkIY_uhEhNxxATWBlBdMDJrfdvBff6htbndO8FcapEoTwWFTftDezSAZz2mtOTBQ1LEQ5n6pD-0jJbeL42sh"),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white, width: 2),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Text(
+                    'LVL 5',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
                 ),
-                child: Text(
-                  'LVL $level',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             'Explorer Leo',
-            style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 28),
+            style: Theme.of(context).textTheme.displayMedium,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Fixed typo here
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.monetization_on, color: AppTheme.accentGold, size: 28),
-              const SizedBox(width: 6),
+              const Icon(Icons.monetization_on, color: AppTheme.accentGold, size: 24),
+              const SizedBox(width: 4),
               Text(
                 '$balance Time Coins',
                 style: const TextStyle(
                   color: AppTheme.primaryColor,
                   fontWeight: FontWeight.w900,
-                  fontSize: 20,
+                  fontSize: 18,
                 ),
               ),
             ],
@@ -152,7 +150,7 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildProgress(BuildContext context, double progress) {
+  Widget _buildProgress(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -162,24 +160,24 @@ class KidsDashboard extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('LEVEL PROGRESS', style: Theme.of(context).textTheme.labelLarge),
-              Text('${(progress * 100).toInt()} / 100 XP', style: const TextStyle(fontWeight: FontWeight.bold)),
+              const Text('150 / 250 XP', style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: progress,
+              value: 150 / 250,
               minHeight: 12,
               backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
               valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             ),
           ),
           const SizedBox(height: 8),
-          Center(
+          const Center(
             child: Text(
-              '${(100 - (progress * 100)).toInt()} XP more to reach the next level!',
-              style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
+              '100 XP more to reach Level 6!',
+              style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
             ),
           ),
         ],
@@ -190,7 +188,7 @@ class KidsDashboard extends ConsumerWidget {
   Widget _buildQuickActions(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: InkWell(
+      child: GestureDetector(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const RewardShop())),
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -232,72 +230,75 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuests(BuildContext context, List tasks) {
+  Widget _buildQuests(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Today's Quests", style: Theme.of(context).textTheme.titleLarge),
+          Text('Today\'s Quests', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 16),
-          if (tasks.isEmpty)
-            const Center(child: Text("No quests today! Relax!"))
-          else
-            ...tasks.map((task) => _buildQuestItem(context, task)).toList(),
+          _buildQuestItem(context, 'Complete Duolingo', 'Daily streak bonus!', Icons.language, Colors.green, 20),
+          _buildQuestItem(context, 'Walk 5,000 Steps', 'Keep it moving!', Icons.directions_walk, Colors.orange, 10),
+          _buildQuestItem(context, 'Logical Puzzle', 'Brain power boost', Icons.extension, Colors.blue, 15),
+          _buildQuestItem(context, 'Chess Lesson', 'Master the board', Icons.grid_view_rounded, Colors.purple, 25),
         ],
       ),
     );
   }
 
-  Widget _buildQuestItem(BuildContext context, dynamic task) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppTheme.primaryColor.withOpacity(0.05)), // Fixed placement here
-      ),
-      elevation: 0,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+  Widget _buildQuestItem(BuildContext context, String title, String sub, IconData icon, Color color, int reward) {
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const MissionFeed())),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: AppTheme.primaryColor.withOpacity(0.05)),
+        ),
+        elevation: 0,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
               ),
-              child: const Icon(Icons.star, color: AppTheme.primaryColor, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(task.description, style: const TextStyle(color: AppTheme.textMuted, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(sub, style: const TextStyle(color: AppTheme.textMuted, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.monetization_on, color: AppTheme.primaryColor, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      '$reward',
+                      style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.monetization_on, color: AppTheme.primaryColor, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${task.coins}',
-                    style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -313,29 +314,32 @@ class KidsDashboard extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(Icons.home, 'Home', true),
-          _buildNavItem(Icons.task_alt, 'Tasks', false),
-          _buildNavItem(Icons.shopping_bag, 'Store', false),
-          _buildNavItem(Icons.person, 'Profile', false),
+          _buildNavItem(context, Icons.home, 'Home', true),
+          _buildNavItem(context, Icons.task_alt, 'Tasks', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const MissionFeed()))),
+          _buildNavItem(context, Icons.shopping_bag, 'Store', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const RewardShop()))),
+          _buildNavItem(context, Icons.person, 'Profile', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const AvatarCustomizer()))),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool active) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: active ? AppTheme.primaryColor : AppTheme.textMuted, size: 28),
-        Text(
-          label,
-          style: TextStyle(
-            color: active ? AppTheme.primaryColor : AppTheme.textMuted,
-            fontSize: 10,
-            fontWeight: active ? FontWeight.bold : FontWeight.normal,
+  Widget _buildNavItem(BuildContext context, IconData icon, String label, bool active, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: active ? AppTheme.primaryColor : AppTheme.textMuted, size: 28),
+          Text(
+            label,
+            style: TextStyle(
+              color: active ? AppTheme.primaryColor : AppTheme.textMuted,
+              fontSize: 10,
+              fontWeight: active ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
