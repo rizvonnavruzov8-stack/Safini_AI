@@ -54,97 +54,100 @@ class _AIFriendChatState extends ConsumerState<AIFriendChat> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const CircleAvatar(
-                backgroundColor: Color(0xFFE0E0FF),
-                child: Icon(Icons.face, color: Color(0xFF6C63FF)),
-              ),
-              const SizedBox(width: 12),
-              Text('Chat with Safini', style: Theme.of(context).textTheme.titleLarge),
-            ],
-          ),
-          const Divider(height: 30),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isAI = msg['role'] == 'ai';
-                return Align(
-                  alignment: isAI ? Alignment.centerLeft : Alignment.centerRight,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
-                    decoration: BoxDecoration(
-                      color: isAI ? const Color(0xFFF0F0FF) : const Color(0xFF6C63FF),
-                      borderRadius: BorderRadius.circular(16).copyWith(
-                        bottomLeft: isAI ? const Radius.circular(0) : const Radius.circular(16),
-                        bottomRight: isAI ? const Radius.circular(16) : const Radius.circular(0),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      msg['content']!,
-                      style: TextStyle(
-                        color: isAI ? const Color(0xFF212121) : Colors.white,
-                        fontWeight: isAI ? FontWeight.w500 : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                );
-              },
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: Row(
+            const SizedBox(height: 20),
+            Row(
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: 'Ask Safini something...',
-                      filled: true,
-                      fillColor: Colors.grey[100],
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
-                    ),
-                  ),
+                const CircleAvatar(
+                  backgroundColor: Color(0xFFE0E0FF),
+                  child: Icon(Icons.face, color: Color(0xFF6C63FF)),
                 ),
-                const SizedBox(width: 10),
-                CircleAvatar(
-                  backgroundColor: const Color(0xFF6C63FF),
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: _sendMessage,
-                  ),
-                ),
+                const SizedBox(width: 12),
+                Text('Chat with Safini', style: Theme.of(context).textTheme.titleLarge),
               ],
             ),
-          ),
-        ],
+            const Divider(height: 30),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final msg = _messages[index];
+                  final isAI = msg['role'] == 'ai';
+                  return Align(
+                    alignment: isAI ? Alignment.centerLeft : Alignment.centerRight,
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(12),
+                      constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
+                      decoration: BoxDecoration(
+                        color: isAI ? const Color(0xFFF0F0FF) : const Color(0xFF6C63FF),
+                        borderRadius: BorderRadius.circular(16).copyWith(
+                          bottomLeft: isAI ? const Radius.circular(0) : const Radius.circular(16),
+                          bottomRight: isAI ? const Radius.circular(16) : const Radius.circular(0),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        msg['content']!,
+                        style: TextStyle(
+                          color: isAI ? const Color(0xFF212121) : Colors.white,
+                          fontWeight: isAI ? FontWeight.w500 : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: 'Ask Safini something...',
+                        filled: true,
+                        fillColor: Colors.grey[100],
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  CircleAvatar(
+                    backgroundColor: const Color(0xFF6C63FF),
+                    child: IconButton(
+                      icon: const Icon(Icons.send, color: Colors.white),
+                      onPressed: _sendMessage,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
