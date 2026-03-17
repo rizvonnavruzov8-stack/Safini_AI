@@ -74,3 +74,15 @@ class CoinBalanceNotifier extends StateNotifier<int> {
     _calculateBalance();
   }
 }
+
+final xpProvider = StateProvider<int>((ref) => 1500); // Mocked XP
+
+final levelProvider = Provider<int>((ref) {
+  final xp = ref.watch(xpProvider);
+  return (xp / 100).floor(); // Every 100 XP is a level
+});
+
+final progressToNextLevelProvider = Provider<double>((ref) {
+  final xp = ref.watch(xpProvider);
+  return (xp % 100) / 100.0; 
+});

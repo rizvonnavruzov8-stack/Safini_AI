@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../models/task_model.dart';
 import '../../providers/state_providers.dart';
+import '../../core/app_theme.dart';
 import 'approval_queue.dart';
 import 'task_creator.dart';
 
@@ -12,179 +11,294 @@ class ParentDashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(taskListProvider);
+    final balance = ref.watch(coinBalanceProvider);
     final pendingApprovals = tasks.where((t) => t.isCompleted && !t.isApproved).length;
-    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: AppTheme.bgLight,
       appBar: AppBar(
-        title: const Text('Parent Dashboard'),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
+        title: const Text('Safinio Parent', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => ref.refresh(taskListProvider),
+            icon: const Icon(Icons.settings, color: AppTheme.primaryColor),
+            onPressed: () {},
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildChildSummary(context),
-            const SizedBox(height: 24),
+            _buildChildProfile(context, balance),
+            _buildStatsGrid(),
+            _buildScreenTimeChart(context),
+            _buildAppLimits(context),
             if (pendingApprovals > 0) _buildApprovalAlert(context, pendingApprovals),
-            const SizedBox(height: 24),
-            _buildQuickActions(context),
-            const SizedBox(height: 32),
-            Text('Child Activity', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _buildActivityList(context, tasks),
+            _buildRealWorldTasks(context, tasks),
+            const SizedBox(height: 30),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => ref.read(appModeProvider.notifier).state = AppMode.kids,
-        label: const Text('Kids Mode'),
-        icon: const Icon(Icons.face),
+      // Bottom Nav Mockup from UI
+      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildChildProfile(BuildContext context, int balance) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.primaryColor.withOpacity(0.2), width: 4),
+              image: const DecorationImage(
+                image: NetworkImage("https://lh3.googleusercontent.com/aida-public/AB6AXuCTQDXst8akwkrfwYKSSfcANDHttEaNPofNNX4N-aZQ59C9OVSOKHNhl6VCbwOGrC2H1fgke4mJNH2_7rC__r08LE_fC0Xk4Pon7gvjt2kWGc4OBB-RJStcdk2BumYIjsxCcXnpaHLb6QBFl23t8I_QNhSe5nO7uX1T6zUk1ZtqtaAI5yFAQyIUIg45wtayfcG1r0YM44SnUKCGiUGywmjWMm92LS1EC4uEpKtABsBXRiiHGmMr1VmYjSHLKZ0mm_5lIfcsJ8K0h1BC"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Alex's Progress", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text("Level 12 Explorer", style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w600)),
+              Row(
+                children: [
+                  const Icon(Icons.monetization_on, color: Colors.amber, size: 16),
+                  const SizedBox(width: 4),
+                  Text("$balance Time Coins", style: const TextStyle(color: AppTheme.slate500, fontSize: 14)),
+                ],
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
 
-  Widget _buildChildSummary(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF6C63FF),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: const Row(
+  Widget _buildStatsGrid() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.white,
-            child: Icon(Icons.person, color: Color(0xFF6C63FF), size: 40),
+          _buildStatCard("Steps", "4,230", "+12% vs yesterday", Icons.directions_run),
+          const SizedBox(width: 12),
+          _buildStatCard("Lessons", "5/8", "+2 today", Icons.school),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, String value, String sub, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.primaryColor.withOpacity(0.1)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: AppTheme.primaryColor, size: 20),
+                const SizedBox(width: 8),
+                Text(title.toUpperCase(), style: const TextStyle(fontSize: 10, color: AppTheme.slate500, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(sub, style: const TextStyle(color: AppTheme.emerald600, fontSize: 10, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScreenTimeChart(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Weekly Screen Time", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildBar(0.4), _buildBar(0.6), _buildBar(0.3), _buildBar(0.8),
+                _buildBar(0.95, isPrimary: true), _buildBar(0.5), _buildBar(0.45),
+              ],
+            ),
           ),
-          SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBar(double heightFactor, {bool isPrimary = false}) {
+    return Container(
+      width: 35,
+      height: 100 * heightFactor,
+      decoration: BoxDecoration(
+        color: isPrimary ? AppTheme.primaryColor : AppTheme.primaryColor.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+
+  Widget _buildAppLimits(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Child: Name',
-                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                'Parent: Name',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
-              ),
+              const Text("App Limits", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              TextButton(onPressed: () {}, child: const Text("Manage All")),
             ],
           ),
+          _buildAppItem("YouTube Kids", 48, 60, Colors.red),
+          const SizedBox(height: 12),
+          _buildAppItem("Roblox", 15, 60, Colors.blue),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppItem(String name, int current, int limit, Color color) {
+    double progress = current / limit;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.slate100)),
+      child: Row(
+        children: [
+          Container(
+            width: 40, height: 40,
+            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+            child: const Icon(Icons.play_arrow, color: Colors.white),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                LinearProgressIndicator(value: progress, color: color, backgroundColor: AppTheme.slate100),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text("$current / ${limit}m", style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              Text("${limit - current}m left", style: const TextStyle(fontSize: 10, color: AppTheme.slate500)),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRealWorldTasks(BuildContext context, List tasks) {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Real-world Tasks", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const TaskCreator())),
+                icon: const Icon(Icons.add, size: 16),
+                label: const Text("New Task", style: TextStyle(fontSize: 12)),
+                style: ElevatedButton.styleFrom(minimumSize: const Size(0, 36), padding: const EdgeInsets.symmetric(horizontal: 12)),
+              )
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...tasks.map((task) => _buildTaskItem(task)).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskItem(dynamic task) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.primaryColor.withOpacity(0.1))),
+      child: Row(
+        children: [
+          const Icon(Icons.cleaning_services, color: AppTheme.primaryColor),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              const Text("Daily Chore", style: TextStyle(fontSize: 12, color: AppTheme.slate500)),
+            ]),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: Colors.amber.shade100, borderRadius: BorderRadius.circular(4)),
+                child: Text("${task.coins} 🪙", style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 12)),
+              ),
+              const SizedBox(height: 4),
+              Text(task.isApproved ? "Approved" : "Active", style: TextStyle(color: task.isApproved ? Colors.green : Colors.blue, fontSize: 10, fontWeight: FontWeight.bold)),
+            ],
+          )
         ],
       ),
     );
   }
 
   Widget _buildApprovalAlert(BuildContext context, int count) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.orange.shade200),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.notification_important, color: Colors.orange),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'You have $count tasks waiting for approval!',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ApprovalQueue())),
-            child: const Text('Review'),
-          ),
-        ],
-      ),
-    );
+     return Padding(
+       padding: const EdgeInsets.symmetric(horizontal: 20),
+       child: ListTile(
+         tileColor: Colors.orange.shade50,
+         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+         leading: const Icon(Icons.notification_important, color: Colors.orange),
+         title: Text("You have $count tasks to approve"),
+         trailing: const Icon(Icons.chevron_right),
+         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ApprovalQueue())),
+       ),
+     );
   }
 
-  Widget _buildQuickActions(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildActionButton(
-            context,
-            'Create Task',
-            Icons.add_task,
-            Colors.blue,
-            () => Navigator.push(context, MaterialPageRoute(builder: (c) => const TaskCreator())),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildActionButton(
-            context,
-            'Reward Rules',
-            Icons.rule,
-            Colors.purple,
-            () {},
-          ),
-        ),
+  Widget _buildBottomNav() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: AppTheme.primaryColor,
+      unselectedItemColor: AppTheme.slate500,
+      currentIndex: 0,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Monitor"),
+        BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: "Tasks"),
+        BottomNavigationBarItem(icon: Icon(Icons.phone_iphone), label: "Apps"),
+        BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: "Family"),
       ],
     );
-  }
-
-  Widget _buildActionButton(BuildContext context, String title, IconData icon, Color color, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: color),
-            const SizedBox(height: 8),
-            Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActivityList(BuildContext context, List tasks) {
-    if (tasks.isEmpty) return const Center(child: Text('No tasks created yet.'));
-    
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: tasks.length > 5 ? 5 : tasks.length,
-      itemBuilder: (context, index) {
-        final task = tasks[index];
-        return ListTile(
-          leading: Icon(_getCategoryIcon(task.category), color: Colors.grey),
-          title: Text(task.title),
-          subtitle: Text(task.isApproved ? 'Approved' : (task.isCompleted ? 'Pending Approval' : 'In Progress')),
-          trailing: Text('${task.coins} pts'),
-        );
-      },
-    );
-  }
-
-  IconData _getCategoryIcon(TaskCategory cat) {
-    switch (cat) {
-      case TaskCategory.language: return FontAwesomeIcons.language;
-      case TaskCategory.movement: return FontAwesomeIcons.personRunning;
-      case TaskCategory.brain: return FontAwesomeIcons.brain;
-      case TaskCategory.realWorld: return FontAwesomeIcons.house;
-      case TaskCategory.social: return FontAwesomeIcons.users;
-      default: return Icons.task;
-    }
   }
 }
