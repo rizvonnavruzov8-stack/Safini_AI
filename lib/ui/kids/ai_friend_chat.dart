@@ -16,20 +16,36 @@ class _AIFriendChatState extends ConsumerState<AIFriendChat> {
   final _controller = TextEditingController();
 
   void _sendMessage() {
-    if (_controller.text.isEmpty) return;
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
     
     setState(() {
-      _messages.add({'role': 'user', 'content': _controller.text});
+      _messages.add({'role': 'user', 'content': text});
       _controller.clear();
     });
 
-    // Simple AI response simulation
+    // Simple AI response logic
+    String aiResponse = "That's interesting! Tell me more.";
+    final lowerText = text.toLowerCase();
+    
+    if (lowerText.contains('hi') || lowerText.contains('hello')) {
+      aiResponse = "Hi there! I'm Safini. Ready to earn some coins?";
+    } else if (lowerText.contains('coin') || lowerText.contains('earn')) {
+      aiResponse = "You can earn coins by completing missions like Duolingo or taking steps! Check the Mission Feed.";
+    } else if (lowerText.contains('roblox') || lowerText.contains('game')) {
+      aiResponse = "Roblox is a great reward! You need 50 coins to unlock 30 minutes. You can do it!";
+    } else if (lowerText.contains('how')) {
+      aiResponse = "Just finish your tasks, submit proof, and once your parent approves, you get coins!";
+    } else if (lowerText.contains('duolingo')) {
+      aiResponse = "Duolingo is awesome for learning! Finishing a lesson gets you closer to your goal. 🚀";
+    }
+
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() {
           _messages.add({
             'role': 'ai', 
-            'content': 'That sounds like a great plan! Completing your Duolingo lesson would get you closer to your goal. 🚀'
+            'content': aiResponse
           });
         });
       }
@@ -77,15 +93,25 @@ class _AIFriendChatState extends ConsumerState<AIFriendChat> {
                     padding: const EdgeInsets.all(12),
                     constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
                     decoration: BoxDecoration(
-                      color: isAI ? Colors.grey[100] : const Color(0xFF6C63FF),
+                      color: isAI ? const Color(0xFFF0F0FF) : const Color(0xFF6C63FF),
                       borderRadius: BorderRadius.circular(16).copyWith(
                         bottomLeft: isAI ? const Radius.circular(0) : const Radius.circular(16),
                         bottomRight: isAI ? const Radius.circular(16) : const Radius.circular(0),
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Text(
                       msg['content']!,
-                      style: TextStyle(color: isAI ? Colors.black : Colors.white),
+                      style: TextStyle(
+                        color: isAI ? const Color(0xFF212121) : Colors.white,
+                        fontWeight: isAI ? FontWeight.w500 : FontWeight.normal,
+                      ),
                     ),
                   ),
                 );
