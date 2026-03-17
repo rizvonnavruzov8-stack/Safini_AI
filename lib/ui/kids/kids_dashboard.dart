@@ -10,7 +10,6 @@ class KidsDashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watching providers for real-time data
     final balance = ref.watch(coinBalanceProvider);
     final level = ref.watch(levelProvider);
     final progress = ref.watch(progressToNextLevelProvider);
@@ -38,7 +37,6 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  // Header matching HTML Mock
   Widget _buildAppBar(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -79,7 +77,6 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  // Hero section with Avatar and Coins
   Widget _buildHero(BuildContext context, int balance, int level) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 30),
@@ -136,7 +133,7 @@ class KidsDashboard extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
           Row(
-            mainAxisAlignment: MainCenter,
+            mainAxisAlignment: MainAxisAlignment.center, // Fixed typo here
             children: [
               const Icon(Icons.monetization_on, color: AppTheme.accentGold, size: 28),
               const SizedBox(width: 6),
@@ -155,7 +152,6 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  // XP Progress Bar
   Widget _buildProgress(BuildContext context, double progress) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -191,7 +187,6 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  // Quick Action to Store
   Widget _buildQuickActions(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -237,7 +232,6 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  // Quest List
   Widget _buildQuests(BuildContext context, List tasks) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -258,10 +252,12 @@ class KidsDashboard extends ConsumerWidget {
   Widget _buildQuestItem(BuildContext context, dynamic task) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: AppTheme.primaryColor.withOpacity(0.05)), // Fixed placement here
+      ),
       elevation: 0,
       color: Colors.white,
-      side: BorderSide(color: AppTheme.primaryColor.withOpacity(0.05)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
