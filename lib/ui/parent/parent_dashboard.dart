@@ -69,11 +69,11 @@ class ParentDashboard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Child: Ilkhom Jr.',
+                'Child: Name',
                 style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Text(
-                'Parent: Ilkhom S.',
+                'Parent: Name',
                 style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],
