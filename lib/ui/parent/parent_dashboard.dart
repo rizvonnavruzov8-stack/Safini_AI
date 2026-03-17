@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../models/task_model.dart';
 import '../../providers/state_providers.dart';
 import 'approval_queue.dart';
 import 'task_creator.dart';
@@ -176,7 +177,7 @@ class ParentDashboard extends ConsumerWidget {
     );
   }
 
-  IconData _getCategoryIcon(dynamic cat) {
+  IconData _getCategoryIcon(TaskCategory cat) {
     switch (cat) {
       case TaskCategory.language: return FontAwesomeIcons.language;
       case TaskCategory.movement: return FontAwesomeIcons.personRunning;
