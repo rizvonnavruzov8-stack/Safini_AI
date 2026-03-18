@@ -136,9 +136,10 @@ class KidsDashboard extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            name,
+            name as String,
             style: Theme.of(context).textTheme.displayMedium,
           ),
+
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

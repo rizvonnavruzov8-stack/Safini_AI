@@ -68,7 +68,8 @@ class ProfileScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Text(ref.watch(childProfileProvider)['name'] ?? 'Child', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        Text(ref.watch(childProfileProvider)['name'] as String? ?? 'Child', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+
 
         const SizedBox(height: 8),
         Padding(
