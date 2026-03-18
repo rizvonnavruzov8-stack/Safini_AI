@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../models/transaction_model.dart';
+import '../../models/reward_model.dart';
 import '../../providers/state_providers.dart';
+import '../../core/app_theme.dart';
+import 'avatar_customizer.dart';
 
 class RewardShop extends ConsumerWidget {
   const RewardShop({super.key});

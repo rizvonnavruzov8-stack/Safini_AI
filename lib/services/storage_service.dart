@@ -3,6 +3,7 @@ import '../models/task_model.dart';
 import '../models/reward_model.dart';
 import '../models/transaction_model.dart';
 import '../models/avatar_model.dart';
+import '../models/app_limit_model.dart';
 
 class StorageService {
   static const String taskBoxName = 'tasks';
@@ -10,6 +11,7 @@ class StorageService {
   static const String transactionBoxName = 'transactions';
   static const String settingsBoxName = 'settings';
   static const String avatarBoxName = 'avatars';
+  static const String appLimitBoxName = 'appLimits';
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -22,6 +24,7 @@ class StorageService {
     if (!Hive.isAdapterRegistered(4)) Hive.registerAdapter(TransactionAdapter());
     if (!Hive.isAdapterRegistered(5)) Hive.registerAdapter(AvatarCategoryAdapter());
     if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(AvatarItemAdapter());
+    if (!Hive.isAdapterRegistered(7)) Hive.registerAdapter(AppLimitAdapter());
 
     // Open Boxes
     await Hive.openBox<SafiniTask>(taskBoxName);
@@ -29,6 +32,7 @@ class StorageService {
     await Hive.openBox<Transaction>(transactionBoxName);
     await Hive.openBox(settingsBoxName);
     await Hive.openBox<AvatarItem>(avatarBoxName);
+    await Hive.openBox<AppLimit>(appLimitBoxName);
 
     // Seed data if empty
     if (Hive.box<SafiniTask>(taskBoxName).isEmpty) {
@@ -36,6 +40,9 @@ class StorageService {
     }
     if (Hive.box<AvatarItem>(avatarBoxName).isEmpty) {
       await _seedAvatars();
+    }
+    if (Hive.box<AppLimit>(appLimitBoxName).isEmpty) {
+      await _seedAppLimits();
     }
   }
 
@@ -67,9 +74,18 @@ class StorageService {
     ]);
   }
 
+  Future<void> _seedAppLimits() async {
+    final appLimitBox = Hive.box<AppLimit>(appLimitBoxName);
+    await appLimitBox.addAll([
+      AppLimit(id: 'app1', appName: 'YouTube Kids', usedMinutes: 0, limitMinutes: 60, colorHex: 0xFFF44336), // Red
+      AppLimit(id: 'app2', appName: 'Roblox', usedMinutes: 0, limitMinutes: 60, colorHex: 0xFF2196F3), // Blue
+    ]);
+  }
+
   Box<SafiniTask> getTaskBox() => Hive.box<SafiniTask>(taskBoxName);
   Box<Reward> getRewardBox() => Hive.box<Reward>(rewardBoxName);
   Box<Transaction> getTransactionBox() => Hive.box<Transaction>(transactionBoxName);
   Box<AvatarItem> getAvatarBox() => Hive.box<AvatarItem>(avatarBoxName);
+  Box<AppLimit> getAppLimitBox() => Hive.box<AppLimit>(appLimitBoxName);
   Box getSettingsBox() => Hive.box(settingsBoxName);
 }

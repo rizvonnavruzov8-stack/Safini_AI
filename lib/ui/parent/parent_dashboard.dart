@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/state_providers.dart';
 import '../../core/app_theme.dart';
+import '../../models/app_limit_model.dart';
 import 'approval_queue.dart';
 import 'task_creator.dart';
 
@@ -10,35 +11,96 @@ class ParentDashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tasks = ref.watch(taskListProvider);
-    final balance = ref.watch(coinBalanceProvider);
-    final pendingApprovals = tasks.where((t) => t.isCompleted && !t.isApproved).length;
-
+    final currentTab = ref.watch(parentTabProvider);
+    
     return Scaffold(
       backgroundColor: AppTheme.bgLight,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        title: Text(_getTabTitle(currentTab), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primaryColor),
           onPressed: () => ref.read(appModeProvider.notifier).state = AppMode.kids,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildChildProfile(context, balance),
-            _buildStatsGrid(),
-            _buildScreenTimeChart(context),
-            _buildAppLimits(context),
-            if (pendingApprovals > 0) _buildApprovalAlert(context, pendingApprovals),
-            _buildRealWorldTasks(context, tasks),
-            const SizedBox(height: 30),
-          ],
-        ),
+      body: _buildCurrentTab(context, ref, currentTab),
+      bottomNavigationBar: _buildBottomNav(ref, currentTab),
+    );
+  }
+
+  String _getTabTitle(int tab) {
+    switch (tab) {
+      case 0: return "Monitor";
+      case 1: return "Tasks";
+      case 2: return "Apps";
+      case 3: return "Family";
+      default: return "Parent Dashboard";
+    }
+  }
+
+  Widget _buildCurrentTab(BuildContext context, WidgetRef ref, int tab) {
+    switch (tab) {
+      case 0: return _buildMonitorView(context, ref);
+      case 1: return const ApprovalQueue(); // Reuse existing ApprovalQueue for Tasks
+      case 2: return _buildAppsView(context, ref);
+      case 3: return _buildFamilyView(context, ref);
+      default: return const Center(child: Text("Coming Soon"));
+    }
+  }
+
+  Widget _buildMonitorView(BuildContext context, WidgetRef ref) {
+    final tasks = ref.watch(taskListProvider);
+    final balance = ref.watch(coinBalanceProvider);
+    final pendingApprovals = tasks.where((t) => t.isCompleted && !t.isApproved).length;
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildChildProfile(context, balance),
+          _buildStatsGrid(),
+          _buildScreenTimeChart(context),
+          _buildAppLimits(context, ref),
+          if (pendingApprovals > 0) _buildApprovalAlert(context, pendingApprovals),
+          _buildRealWorldTasks(context, tasks),
+          const SizedBox(height: 30),
+        ],
       ),
-      // Bottom Nav Mockup from UI
-      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  Widget _buildAppsView(BuildContext context, WidgetRef ref) {
+    return _buildAppLimits(context, ref, showManageAll: true);
+  }
+
+  Widget _buildFamilyView(BuildContext context, WidgetRef ref) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text("Family Members", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        _buildMemberItem("Alex", "Level 12 Explorer", true),
+        _buildMemberItem("Maya", "Level 5 Spark", false),
+        const SizedBox(height: 20),
+        ElevatedButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.add),
+          label: const Text("Add Family Member"),
+        )
+      ],
+    );
+  }
+
+  Widget _buildMemberItem(String name, String status, bool isActive) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        backgroundColor: isActive ? AppTheme.primaryColor : AppTheme.slate300,
+        child: Text(name[0], style: const TextStyle(color: Colors.white)),
+      ),
+      title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(status),
+      trailing: const Icon(Icons.chevron_right),
     );
   }
 
@@ -156,7 +218,9 @@ class ParentDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildAppLimits(BuildContext context) {
+  Widget _buildAppLimits(BuildContext context, WidgetRef ref, {bool showManageAll = false}) {
+    final appLimits = ref.watch(appLimitsProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -165,19 +229,20 @@ class ParentDashboard extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("App Limits", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              TextButton(onPressed: () {}, child: const Text("Manage All")),
+              if (!showManageAll) TextButton(onPressed: () => ref.read(parentTabProvider.notifier).state = 2, child: const Text("Manage All")),
             ],
           ),
-          _buildAppItem("YouTube Kids", 48, 60, Colors.red),
-          const SizedBox(height: 12),
-          _buildAppItem("Roblox", 15, 60, Colors.blue),
+          ...appLimits.map((limit) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildAppItem(limit.appName, limit.usedMinutes, limit.limitMinutes, Color(limit.colorHex)),
+          )).toList(),
         ],
       ),
     );
   }
 
   Widget _buildAppItem(String name, int current, int limit, Color color) {
-    double progress = current / limit;
+    double progress = limit > 0 ? (current / limit).clamp(0.0, 1.0) : 0.0;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppTheme.slate100)),
@@ -282,12 +347,13 @@ class ParentDashboard extends ConsumerWidget {
      );
   }
 
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(WidgetRef ref, int currentTab) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       selectedItemColor: AppTheme.primaryColor,
       unselectedItemColor: AppTheme.slate500,
-      currentIndex: 0,
+      currentIndex: currentTab,
+      onTap: (index) => ref.read(parentTabProvider.notifier).state = index,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: "Monitor"),
         BottomNavigationBarItem(icon: Icon(Icons.task_alt), label: "Tasks"),

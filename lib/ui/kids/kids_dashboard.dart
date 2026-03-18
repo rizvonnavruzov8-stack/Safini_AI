@@ -4,6 +4,8 @@ import '../../providers/state_providers.dart';
 import '../../core/app_theme.dart';
 import 'reward_shop.dart';
 import 'mission_feed.dart';
+import 'avatar_customizer.dart';
+import 'profile_screen.dart';
 
 class KidsDashboard extends ConsumerWidget {
   const KidsDashboard({super.key});
@@ -26,9 +28,10 @@ class KidsDashboard extends ConsumerWidget {
             children: [
               _buildAppBar(context, ref),
               _buildHero(context, balance, level),
-              _buildProgress(context, progress),
+              _buildProgress(context, level, progress),
               _buildQuickActions(context),
-              _buildQuests(context, tasks),
+
+              _buildQuests(context),
               const SizedBox(height: 30),
             ],
           ),
@@ -77,7 +80,7 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildHero(BuildContext context, int balance) {
+  Widget _buildHero(BuildContext context, int balance, int level) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
@@ -86,7 +89,7 @@ class KidsDashboard extends ConsumerWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const AvatarCustomizer())),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => AvatarCustomizer())),
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -116,9 +119,9 @@ class KidsDashboard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white, width: 2),
                   ),
-                  child: const Text(
-                    'LVL 5',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  child: Text(
+                    'LVL $level',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                 ),
               ],
@@ -150,7 +153,7 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildProgress(BuildContext context) {
+  Widget _buildProgress(BuildContext context, int level, double progress) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -160,24 +163,24 @@ class KidsDashboard extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('LEVEL PROGRESS', style: Theme.of(context).textTheme.labelLarge),
-              const Text('150 / 250 XP', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('${(progress * 100).toInt()} / 100 XP', style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: 150 / 250,
+              value: progress,
               minHeight: 12,
               backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
               valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             ),
           ),
           const SizedBox(height: 8),
-          const Center(
+          Center(
             child: Text(
-              '100 XP more to reach Level 6!',
-              style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+              '${(100 - (progress * 100)).toInt()} XP more to reach Level ${level + 1}!',
+              style: const TextStyle(color: AppTheme.textMuted, fontSize: 12),
             ),
           ),
         ],
@@ -317,7 +320,7 @@ class KidsDashboard extends ConsumerWidget {
           _buildNavItem(context, Icons.home, 'Home', true),
           _buildNavItem(context, Icons.task_alt, 'Tasks', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const MissionFeed()))),
           _buildNavItem(context, Icons.shopping_bag, 'Store', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const RewardShop()))),
-          _buildNavItem(context, Icons.person, 'Profile', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const AvatarCustomizer()))),
+          _buildNavItem(context, Icons.person, 'Profile', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => AvatarCustomizer()))),
         ],
       ),
     );

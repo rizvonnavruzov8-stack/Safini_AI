@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/state_providers.dart';
 import '../../models/avatar_model.dart';
+import '../../models/transaction_model.dart';
 import '../../core/app_theme.dart';
 
 class AvatarCustomizer extends ConsumerWidget {

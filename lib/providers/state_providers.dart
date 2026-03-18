@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/task_model.dart';
 import '../models/reward_model.dart';
 import '../models/transaction_model.dart';
+import '../models/avatar_model.dart';
+import '../models/app_limit_model.dart';
 import '../services/storage_service.dart';
 
 enum AppMode { kids, parent }
@@ -125,3 +127,31 @@ class RewardListNotifier extends StateNotifier<List<Reward>> {
     state = _storage.getRewardBox().values.toList();
   }
 }
+
+// App Limits Provider
+final appLimitsProvider = StateNotifierProvider<AppLimitNotifier, List<AppLimit>>((ref) {
+  final storage = ref.watch(storageServiceProvider);
+  return AppLimitNotifier(storage);
+});
+
+class AppLimitNotifier extends StateNotifier<List<AppLimit>> {
+  final StorageService _storage;
+  AppLimitNotifier(this._storage) : super([]) {
+    _loadLimits();
+  }
+
+  void _loadLimits() {
+    state = _storage.getAppLimitBox().values.toList();
+  }
+
+  Future<void> updateLimit(String id, int used, int limit) async {
+    final item = state.firstWhere((i) => i.id == id);
+    item.usedMinutes = used;
+    item.limitMinutes = limit;
+    await item.save();
+    _loadLimits();
+  }
+}
+
+// Parent Dashboard Tab Provider
+final parentTabProvider = StateProvider<int>((ref) => 0);
