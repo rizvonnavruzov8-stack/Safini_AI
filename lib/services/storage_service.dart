@@ -38,6 +38,9 @@ class StorageService {
     if (Hive.box<SafiniTask>(taskBoxName).isEmpty) {
       await _seedTasks();
     }
+    if (Hive.box<Reward>(rewardBoxName).isEmpty) {
+      await _seedRewards();
+    }
     if (Hive.box<AvatarItem>(avatarBoxName).isEmpty) {
       await _seedAvatars();
     }
@@ -48,15 +51,16 @@ class StorageService {
 
   Future<void> _seedTasks() async {
     final taskBox = Hive.box<SafiniTask>(taskBoxName);
-    final rewardBox = Hive.box<Reward>(rewardBoxName);
-
     await taskBox.addAll([
       SafiniTask(id: '1', title: 'Complete Duolingo', description: 'Daily streak bonus!', category: TaskCategory.language, coins: 20),
       SafiniTask(id: '2', title: 'Walk 5,000 Steps', description: 'Keep it moving!', category: TaskCategory.movement, coins: 10),
       SafiniTask(id: '3', title: 'Logical Puzzle', description: 'Brain power boost', category: TaskCategory.brain, coins: 15),
       SafiniTask(id: '4', title: 'Chess Lesson', description: 'Master the board', category: TaskCategory.brain, coins: 25),
     ]);
+  }
 
+  Future<void> _seedRewards() async {
+    final rewardBox = Hive.box<Reward>(rewardBoxName);
     await rewardBox.addAll([
       Reward(id: 'r1', title: 'YouTube Kids', description: '+30 Minutes', cost: 100, durationMinutes: 30),
       Reward(id: 'r2', title: 'Roblox', description: '+20 Minutes', cost: 150, durationMinutes: 20),
@@ -64,6 +68,7 @@ class StorageService {
       Reward(id: 'r4', title: 'Minecraft', description: '+45 Minutes', cost: 200, durationMinutes: 45),
     ]);
   }
+
 
   Future<void> _seedAvatars() async {
     final avatarBox = Hive.box<AvatarItem>(avatarBoxName);

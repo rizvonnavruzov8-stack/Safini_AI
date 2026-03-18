@@ -83,11 +83,17 @@ class ApprovalQueue extends ConsumerWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {}, // Reject logic
+                    onPressed: () {
+                      ref.read(taskListProvider.notifier).rejectTask(task.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Requested more info from child.')),
+                      );
+                    },
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
                     child: const Text('Ask for more'),
                   ),
                 ),
+
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(

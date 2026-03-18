@@ -27,11 +27,13 @@ class KidsDashboard extends ConsumerWidget {
           child: Column(
             children: [
               _buildAppBar(context, ref),
-              _buildHero(context, balance, level),
+              _buildHero(context, ref, balance, level),
               _buildProgress(context, level, progress),
+
               _buildQuickActions(context),
 
-              _buildQuests(context),
+              _buildQuests(context, tasks),
+
               const SizedBox(height: 30),
             ],
           ),
@@ -80,7 +82,10 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildHero(BuildContext context, int balance, int level) {
+  Widget _buildHero(BuildContext context, WidgetRef ref, int balance, int level) {
+    final profile = ref.watch(childProfileProvider);
+    final name = profile['name'] ?? 'Child';
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
@@ -89,7 +94,7 @@ class KidsDashboard extends ConsumerWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => AvatarCustomizer())),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const AvatarCustomizer())),
             child: Stack(
               alignment: Alignment.bottomRight,
               children: [
@@ -129,7 +134,7 @@ class KidsDashboard extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Explorer Leo',
+            name,
             style: Theme.of(context).textTheme.displayMedium,
           ),
           const SizedBox(height: 4),
@@ -152,6 +157,7 @@ class KidsDashboard extends ConsumerWidget {
       ),
     );
   }
+
 
   Widget _buildProgress(BuildContext context, int level, double progress) {
     return Padding(
@@ -233,24 +239,42 @@ class KidsDashboard extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuests(BuildContext context) {
+  Widget _buildQuests(BuildContext context, List<SafiniTask> tasks) {
+    // Show only 4 representative tasks on dashboard, unapproved ones preferred
+    final displayTasks = tasks.where((t) => !t.isApproved).take(4).toList();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Today\'s Quests', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 16),
-          _buildQuestItem(context, 'Complete Duolingo', 'Daily streak bonus!', Icons.language, Colors.green, 20),
-          _buildQuestItem(context, 'Walk 5,000 Steps', 'Keep it moving!', Icons.directions_walk, Colors.orange, 10),
-          _buildQuestItem(context, 'Logical Puzzle', 'Brain power boost', Icons.extension, Colors.blue, 15),
-          _buildQuestItem(context, 'Chess Lesson', 'Master the board', Icons.grid_view_rounded, Colors.purple, 25),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Today\'s Quests', style: Theme.of(context).textTheme.titleLarge),
+              TextButton(
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const MissionFeed())),
+                child: const Text('See All'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (displayTasks.isEmpty)
+             const Center(child: Padding(
+               padding: EdgeInsets.symmetric(vertical: 20),
+               child: Text('All caught up! 🎉', style: TextStyle(color: AppTheme.textMuted)),
+             ))
+          else
+             ...displayTasks.map((task) => _buildQuestItem(context, task)).toList(),
         ],
       ),
     );
   }
 
-  Widget _buildQuestItem(BuildContext context, String title, String sub, IconData icon, Color color, int reward) {
+  Widget _buildQuestItem(BuildContext context, SafiniTask task) {
+    final color = _getCategoryColor(task.category);
+    final icon = _getCategoryIcon(task.category);
+    
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const MissionFeed())),
       child: Card(
@@ -278,8 +302,13 @@ class KidsDashboard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text(sub, style: const TextStyle(color: AppTheme.textMuted, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(task.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      task.isCompleted ? 'Pending Approval' : task.description, 
+                      style: TextStyle(color: task.isCompleted ? Colors.orange : AppTheme.textMuted, fontSize: 12), 
+                      maxLines: 1, 
+                      overflow: TextOverflow.ellipsis
+                    ),
                   ],
                 ),
               ),
@@ -294,7 +323,7 @@ class KidsDashboard extends ConsumerWidget {
                     const Icon(Icons.monetization_on, color: AppTheme.primaryColor, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      '$reward',
+                      '${task.coins}',
                       style: const TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -305,6 +334,26 @@ class KidsDashboard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Color _getCategoryColor(TaskCategory cat) {
+    switch (cat) {
+      case TaskCategory.language: return Colors.blue;
+      case TaskCategory.movement: return Colors.orange;
+      case TaskCategory.brain: return Colors.purple;
+      case TaskCategory.realWorld: return Colors.green;
+      case TaskCategory.social: return Colors.pink;
+    }
+  }
+
+  IconData _getCategoryIcon(TaskCategory cat) {
+    switch (cat) {
+      case TaskCategory.language: return Icons.language;
+      case TaskCategory.movement: return Icons.directions_walk;
+      case TaskCategory.brain: return Icons.extension;
+      case TaskCategory.realWorld: return Icons.house;
+      case TaskCategory.social: return Icons.people;
+    }
   }
 
   Widget _buildBottomNav(BuildContext context) {
@@ -320,11 +369,12 @@ class KidsDashboard extends ConsumerWidget {
           _buildNavItem(context, Icons.home, 'Home', true),
           _buildNavItem(context, Icons.task_alt, 'Tasks', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const MissionFeed()))),
           _buildNavItem(context, Icons.shopping_bag, 'Store', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const RewardShop()))),
-          _buildNavItem(context, Icons.person, 'Profile', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => AvatarCustomizer()))),
+          _buildNavItem(context, Icons.person, 'Profile', false, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (c) => const ProfileScreen()))),
         ],
       ),
     );
   }
+
 
   Widget _buildNavItem(BuildContext context, IconData icon, String label, bool active, {VoidCallback? onTap}) {
     return GestureDetector(

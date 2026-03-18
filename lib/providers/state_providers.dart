@@ -46,7 +46,17 @@ class TaskListNotifier extends StateNotifier<List<SafiniTask>> {
     await task.save();
     _loadTasks();
   }
+
+  Future<void> rejectTask(String id) async {
+    final task = state.firstWhere((t) => t.id == id);
+    task.isCompleted = false;
+    task.isApproved = false;
+    task.proof = null;
+    await task.save();
+    _loadTasks();
+  }
 }
+
 
 final coinBalanceProvider = StateNotifierProvider<CoinBalanceNotifier, int>((ref) {
   final storage = ref.watch(storageServiceProvider);

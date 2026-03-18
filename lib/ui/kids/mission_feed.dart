@@ -109,40 +109,55 @@ class MissionFeed extends ConsumerWidget {
   }
 
   void _showCompletionDialog(BuildContext context, WidgetRef ref, SafiniTask task) {
+    final TextEditingController controller = TextEditingController();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text('Finish ${task.title}'),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('To earn your coins, tell us what you did or upload a selfie!'),
-            SizedBox(height: 16),
+            const Text('Great job! Tell your parent what you did or how it went.', style: TextStyle(fontSize: 14)),
+            const SizedBox(height: 16),
             TextField(
+              controller: controller,
               decoration: InputDecoration(
-                hintText: 'I finished my lesson...',
-                border: OutlineInputBorder(),
+                hintText: 'e.g. I finished levels 1-3 in Duolingo!',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                filled: true,
+                fillColor: Colors.grey[500]?.withOpacity(0.05),
               ),
               maxLines: 3,
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Maybe Later')),
           ElevatedButton(
             onPressed: () {
-              ref.read(taskListProvider.notifier).completeTask(task.id, 'Selfie submitted');
+              ref.read(taskListProvider.notifier).completeTask(task.id, controller.text.isEmpty ? 'Task completed' : controller.text);
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Task sent for parent approval!')),
+                const SnackBar(
+                  content: Text('Request sent to Parent! 🚀'),
+                  backgroundColor: AppTheme.primaryColor,
+                ),
               );
             },
-            child: const Text('Submit'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Send Request'),
           ),
         ],
       ),
     );
   }
+
 
   Color _getCategoryColor(TaskCategory cat) {
     switch (cat) {
