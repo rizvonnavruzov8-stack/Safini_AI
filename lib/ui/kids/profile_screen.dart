@@ -25,7 +25,7 @@ class ProfileScreen extends ConsumerWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            _buildProfileHeader(context, level, progress),
+            _buildProfileHeader(context, ref, level, progress),
             const SizedBox(height: 30),
             _buildStatsRow(balance),
             const SizedBox(height: 40),
@@ -36,7 +36,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, int level, double progress) {
+  Widget _buildProfileHeader(BuildContext context, WidgetRef ref, int level, double progress) {
     return Column(
       children: [
         Stack(

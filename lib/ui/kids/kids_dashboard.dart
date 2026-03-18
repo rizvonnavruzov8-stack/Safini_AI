@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/state_providers.dart';
+import '../../models/task_model.dart';
 import '../../core/app_theme.dart';
+
 import 'reward_shop.dart';
 import 'mission_feed.dart';
 import 'avatar_customizer.dart';

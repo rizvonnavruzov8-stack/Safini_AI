@@ -99,6 +99,13 @@ final progressToNextLevelProvider = Provider<double>((ref) {
   return (xp % 100) / 100.0; 
 });
 
+final childProfileProvider = Provider((ref) => {
+  'name': 'Leo',
+  'level': ref.watch(levelProvider),
+  'xp': ref.watch(xpProvider),
+});
+
+
 final avatarListProvider = StateNotifierProvider<AvatarListNotifier, List<AvatarItem>>((ref) {
   final storage = ref.watch(storageServiceProvider);
   return AvatarListNotifier(storage);
