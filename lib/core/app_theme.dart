@@ -7,7 +7,9 @@ class AppTheme {
   static const Color bgDark = Color(0xFF191022);
   static const Color slate900 = Color(0xFF0F172A);
   static const Color slate500 = Color(0xFF64748B);
+  static const Color slate300 = Color(0xFFCBD5E1);
   static const Color slate100 = Color(0xFFF1F5F9);
+
   static const Color emerald600 = Color(0xFF059669);
   static const Color textMuted = Color(0xFF64748B);
   static const Color accentGold = Color(0xFFF59E0B);
