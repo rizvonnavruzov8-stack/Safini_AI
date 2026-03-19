@@ -24,7 +24,7 @@ class SafiniTaskAdapter extends TypeAdapter<SafiniTask> {
       coins: fields[4] as int,
       isCompleted: fields[5] as bool,
       isApproved: fields[6] as bool,
-      isRejected: fields[8] as bool,
+      isRejected: fields[8] == null ? false : fields[8] as bool,
       proof: fields[7] as String?,
     );
   }

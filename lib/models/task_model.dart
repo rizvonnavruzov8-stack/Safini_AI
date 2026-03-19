@@ -34,7 +34,7 @@ class SafiniTask extends HiveObject {
   bool isApproved;
   @HiveField(7)
   String? proof;
-  @HiveField(8)
+  @HiveField(8, defaultValue: false)
   bool isRejected;
 
   SafiniTask({
