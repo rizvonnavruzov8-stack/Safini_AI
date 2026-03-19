@@ -90,7 +90,7 @@ class ApprovalQueue extends ConsumerWidget {
                       );
                     },
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                    child: const Text('Ask for more'),
+                    child: const Text('Reject / Need More'),
                   ),
                 ),
 

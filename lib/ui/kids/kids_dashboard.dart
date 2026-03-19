@@ -67,7 +67,7 @@ class KidsDashboard extends ConsumerWidget {
             ),
           ),
           Text(
-            'Safinio Kids',
+            'SAFINI AI',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
           ),
           IconButton(

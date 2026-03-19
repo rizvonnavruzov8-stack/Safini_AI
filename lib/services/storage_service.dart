@@ -52,10 +52,10 @@ class StorageService {
   Future<void> _seedTasks() async {
     final taskBox = Hive.box<SafiniTask>(taskBoxName);
     await taskBox.addAll([
-      SafiniTask(id: '1', title: 'Complete Duolingo', description: 'Daily streak bonus!', category: TaskCategory.language, coins: 20),
-      SafiniTask(id: '2', title: 'Walk 5,000 Steps', description: 'Keep it moving!', category: TaskCategory.movement, coins: 10),
-      SafiniTask(id: '3', title: 'Logical Puzzle', description: 'Brain power boost', category: TaskCategory.brain, coins: 15),
-      SafiniTask(id: '4', title: 'Chess Lesson', description: 'Master the board', category: TaskCategory.brain, coins: 25),
+      SafiniTask(id: '1', title: 'Complete 1 lesson in Duolingo', description: 'Keep up your language streak!', category: TaskCategory.language, coins: 20),
+      SafiniTask(id: '2', title: 'Reach 5000 steps', description: 'A healthy body for a healthy mind!', category: TaskCategory.movement, coins: 15),
+      SafiniTask(id: '3', title: 'Solve 3 logic puzzles', description: 'Sharpen your thinking skills', category: TaskCategory.brain, coins: 25),
+      SafiniTask(id: '4', title: 'Reading Time', description: 'Read 15 pages of a book', category: TaskCategory.language, coins: 20),
     ]);
   }
 

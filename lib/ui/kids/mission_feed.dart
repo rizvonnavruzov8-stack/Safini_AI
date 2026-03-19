@@ -37,75 +37,106 @@ class MissionFeed extends ConsumerWidget {
   Widget _buildTaskCard(BuildContext context, WidgetRef ref, SafiniTask task) {
     final isCompleted = task.isCompleted;
     final isApproved = task.isApproved;
+    final isRejected = task.isRejected;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
+      child: InkWell(
+        onTap: (isApproved || isCompleted) ? null : () => _showCompletionDialog(context, ref, task),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isApproved ? Colors.green.shade100 : Colors.grey.shade200,
-          width: 2,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _getCategoryColor(task.category).withOpacity(0.1),
-              shape: BoxShape.circle,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isApproved 
+                  ? Colors.green.shade200 
+                  : isRejected 
+                      ? Colors.red.shade200 
+                      : isCompleted 
+                          ? Colors.orange.shade200 
+                          : Colors.grey.shade200,
+              width: 2,
             ),
-            child: Icon(_getCategoryIcon(task.category), color: _getCategoryColor(task.category)),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Text(
-                  task.description,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFD700).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '+${task.coins}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFB8860B)),
-                ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
-              const SizedBox(height: 8),
-              if (isApproved)
-                const Icon(Icons.check_circle, color: Colors.green)
-              else if (isCompleted)
-                const Text('Pending', style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.bold))
-              else
-                ElevatedButton(
-                  onPressed: () => _showCompletionDialog(context, ref, task),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                    minimumSize: const Size(0, 30),
-                  ),
-                  child: const Text('Do it'),
-                ),
             ],
           ),
-        ],
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _getCategoryColor(task.category).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(_getCategoryIcon(task.category), color: _getCategoryColor(task.category)),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      task.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    Text(
+                      task.description,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    ),
+                    if (isRejected)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          'Parent asked for more info. Try again!',
+                          style: TextStyle(color: Colors.red.shade700, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFD700).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '+${task.coins}',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFB8860B)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (isApproved)
+                    const Icon(Icons.check_circle, color: Colors.green, size: 28)
+                  else if (isCompleted)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text('Pending', style: TextStyle(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.bold)),
+                    )
+                  else if (isRejected)
+                    const Icon(Icons.error_outline, color: Colors.red, size: 28)
+                  else
+                    const Icon(Icons.chevron_right, color: Colors.grey),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

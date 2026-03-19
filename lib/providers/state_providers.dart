@@ -35,6 +35,7 @@ class TaskListNotifier extends StateNotifier<List<SafiniTask>> {
   Future<void> completeTask(String id, String proof) async {
     final task = state.firstWhere((t) => t.id == id);
     task.isCompleted = true;
+    task.isRejected = false;
     task.proof = proof;
     await task.save();
     _loadTasks();
@@ -43,6 +44,8 @@ class TaskListNotifier extends StateNotifier<List<SafiniTask>> {
   Future<void> approveTask(String id) async {
     final task = state.firstWhere((t) => t.id == id);
     task.isApproved = true;
+    task.isCompleted = true;
+    task.isRejected = false;
     await task.save();
     _loadTasks();
   }
@@ -51,7 +54,7 @@ class TaskListNotifier extends StateNotifier<List<SafiniTask>> {
     final task = state.firstWhere((t) => t.id == id);
     task.isCompleted = false;
     task.isApproved = false;
-    task.proof = null;
+    task.isRejected = true;
     await task.save();
     _loadTasks();
   }
