@@ -25,13 +25,14 @@ class SafiniTaskAdapter extends TypeAdapter<SafiniTask> {
       isCompleted: fields[5] as bool,
       isApproved: fields[6] as bool,
       isRejected: fields[8] as bool,
+      proof: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SafiniTask obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -46,6 +47,8 @@ class SafiniTaskAdapter extends TypeAdapter<SafiniTask> {
       ..write(obj.isCompleted)
       ..writeByte(6)
       ..write(obj.isApproved)
+      ..writeByte(7)
+      ..write(obj.proof)
       ..writeByte(8)
       ..write(obj.isRejected);
   }
